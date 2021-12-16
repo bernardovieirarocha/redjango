@@ -3,10 +3,11 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import UserLists from './userLists'
+import LoginComponent from './LoginComponent'
 
 ReactDOM.render(
     <React.StrictMode>
-        <UserLists/>
+        <LoginComponent/>
     </React.StrictMode>,
     document.getElementById("root")
 );
