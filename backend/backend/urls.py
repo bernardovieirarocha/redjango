@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
-from .views import UserViewSet, CustomAuthToken
+from .views import UserViewSet, CustomAuthToken, logout
 from core.views import ItemViewSet, ListViewSet, RegisterView
 
 
@@ -16,5 +16,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('api-token-auth/', CustomAuthToken.as_view()),
-    path('createuser/',  RegisterView.as_view(), name='createuser')
+    path('createuser/',  RegisterView.as_view(), name='createuser'),
+    path('logout/', logout, name='logout')
 ]

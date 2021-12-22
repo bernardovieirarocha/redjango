@@ -1,10 +1,13 @@
 from rest_framework import viewsets
 from rest_framework import permissions, authentication
+from rest_framework.decorators import api_view, permission_classes
 from .serializers import UserSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from core.models import  CustomUser
+from core.models import CustomUser
+
+
 class CustomAuthToken(ObtainAuthToken):
 
     def post(self, request, *args, **kwargs):
@@ -19,13 +22,21 @@ class CustomAuthToken(ObtainAuthToken):
             'email': user.email
         })
 
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def logout(request):
+
+    request.user.auth_token.delete()
+    return Response('User Logged out successfully')
+
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [authentication.TokenAuthentication, authentication.SessionAuthentication]
+    authentication_classes = [
+        authentication.TokenAuthentication, authentication.SessionAuthentication]
 
     def get_queryset(self):
         return CustomUser.objects.filter(id=self.request.user.pk)
