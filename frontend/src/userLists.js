@@ -1,17 +1,16 @@
 import React from "react";
 import ListComponent from "./ListComponent";
-import LoginComponent from "./LoginComponent";
 import axios from "axios";
 
-const url = "http://localhost:8000/list/";
-export default class App extends React.Component {
+
+const url = "http://localhost:8081/list/";
+export default class UserList extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { lists: [], loading: true, token: localStorage.getItem('access_token') };
+        this.state = { lists: [], loading: true, errors: "" };
     }
 
     async componentDidMount() {
-        
         axios
             .get(url, {
                 headers: {
@@ -20,25 +19,20 @@ export default class App extends React.Component {
                 },
             })
             .then((response) => {
-                console.log(response.data)
+                console.log(response.data);
                 this.setState({ lists: response.data, loading: false });
-
             })
             .catch((error) => {
-                if(error.response.status === 401) {
-                    this.setState({token: ''})
+                if (error.response.status === 401) {
+                    this.setState({ errors: "Unauthorized Token" });
                 }
             });
-
-     
     }
 
     render() {
         const listsApi = this.state.lists;
 
-        if (!this.state.token) {
-            return ( <LoginComponent /> );
-        } else {
+
             return (
                 <div>
                     {listsApi.map((list) => (
@@ -50,6 +44,6 @@ export default class App extends React.Component {
                     ))}
                 </div>
             );
-        }
+        
     }
 }

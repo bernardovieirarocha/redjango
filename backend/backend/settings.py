@@ -119,6 +119,8 @@ USE_L10N = True
 USE_TZ = True
 
 
+AUTH_USER_MODEL = "core.User"
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
@@ -128,6 +130,8 @@ STATIC_URL = '/static/'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    'http://127.0.0.1:3001',
+    'http://localhost:3001'
 ]
 
 REST_FRAMEWORK = {

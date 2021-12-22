@@ -1,7 +1,8 @@
 import React from "react";
 import axios from "axios";
+import UserList from "./userLists";
 
-const url = "http://localhost:8000/api-token-auth/";
+const url = "http://localhost:8081/api-token-auth/";
 
 export default class LoginComponent extends React.Component {
     constructor(props) {
@@ -9,6 +10,7 @@ export default class LoginComponent extends React.Component {
         this.state = {
             username: "",
             password: "",
+            errors: this.props.errors,
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -31,6 +33,7 @@ export default class LoginComponent extends React.Component {
                     localStorage.setItem("access_token", response.data.token);
                     localStorage.setItem("email", response.data.email);
                     localStorage.setItem("userId", response.data.user_id);
+                    this.setState({ token: response.data.token });
                 }
             })
             .catch((error) => {
@@ -40,34 +43,40 @@ export default class LoginComponent extends React.Component {
     }
 
     render() {
-        return (
-            <form onSubmit={this.handleSubmit}>
-                <label>
-                    Username:
-                    <input
-                        id="username"
-                        name="username"
-                        autoComplete="Username"
-                        type="text"
-                        value={this.state.username}
-                        onChange={this.handleChange}
-                        placeholder="Username"
-                    />
-                </label>
-                <label>
-                    Password:
-                    <input
-                        id="password"
-                        name="password"
-                        autoComplete="password"
-                        placeholder="Password"
-                        type="password"
-                        value={this.state.password}
-                        onChange={this.handleChange}
-                    />
-                </label>
-                <input type="submit" value="Submit" />
-            </form>
-        );
+        const token = localStorage.getItem("access_token");
+
+        if (!token && !this.state.errors) {
+            return (
+                <form onSubmit={this.handleSubmit}>
+                    <label>
+                        Username:
+                        <input
+                            id="username"
+                            name="username"
+                            autoComplete="Username"
+                            type="text"
+                            value={this.state.username}
+                            onChange={this.handleChange}
+                            placeholder="Username"
+                        />
+                    </label>
+                    <label>
+                        Password:
+                        <input
+                            id="password"
+                            name="password"
+                            autoComplete="password"
+                            placeholder="Password"
+                            type="password"
+                            value={this.state.password}
+                            onChange={this.handleChange}
+                        />
+                    </label>
+                    <input type="submit" value="Submit" />
+                </form>
+            );
+        } else {
+            return <UserList />;
+        }
     }
 }
