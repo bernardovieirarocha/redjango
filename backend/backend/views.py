@@ -4,8 +4,7 @@ from .serializers import UserSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from django.contrib.auth.models import User
-
+from core.models import  CustomUser
 class CustomAuthToken(ObtainAuthToken):
 
     def post(self, request, *args, **kwargs):
@@ -29,4 +28,4 @@ class UserViewSet(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication, authentication.SessionAuthentication]
 
     def get_queryset(self):
-        return User.objects.filter(id=self.request.user.pk)
+        return CustomUser.objects.filter(id=self.request.user.pk)
