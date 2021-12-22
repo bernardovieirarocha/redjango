@@ -1,3 +1,4 @@
+from allauth.socialaccount import adapter
 from rest_framework import viewsets
 from rest_framework import permissions, authentication
 from rest_framework.decorators import api_view, permission_classes
@@ -6,6 +7,21 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from core.models import CustomUser
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from dj_rest_auth.registration.serializers import SocialLoginSerializer
+from dj_rest_auth.registration.views import SocialLoginView
+
+
+class GoogleLogin(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
+    client_class = OAuth2Client
+    serializer_class = SocialLoginSerializer
+
+    def get_serializer(self, *args, **kwargs):
+        serializer_class = self.get_serializer_class()
+        kwargs['context'] = self.get_serializer_context()
+        return serializer_class(*args, **kwargs)
 
 
 class CustomAuthToken(ObtainAuthToken):
@@ -22,12 +38,14 @@ class CustomAuthToken(ObtainAuthToken):
             'email': user.email
         })
 
+
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
 def logout(request):
 
     request.user.auth_token.delete()
     return Response('User Logged out successfully')
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -36,7 +54,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [
-        authentication.TokenAuthentication, authentication.SessionAuthentication]
+        authentication.TokenAuthentication]
 
     def get_queryset(self):
         return CustomUser.objects.filter(id=self.request.user.pk)
