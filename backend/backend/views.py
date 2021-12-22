@@ -1,10 +1,10 @@
-from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import permissions, authentication
 from .serializers import UserSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+from django.contrib.auth.models import User
 
 class CustomAuthToken(ObtainAuthToken):
 
@@ -24,7 +24,6 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = User.objects.filter().order_by('-date_joined')
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [authentication.TokenAuthentication, authentication.SessionAuthentication]

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User, Group
+from django.db.utils import Error
 from rest_framework import viewsets
-from rest_framework import permissions,authentication
+from rest_framework import permissions, authentication
 from .serializers import *
 from .models import *
 from django.shortcuts import render
@@ -9,25 +10,38 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework import status
-from rest_framework.views import APIView
-from .serializers import CustomUserSerializer
+from .serializers import UserSerializer
 from rest_framework.permissions import AllowAny
 from django.db import IntegrityError
+from django.http import HttpResponse
+from rest_framework import generics
 
-class CustomUserCreate(APIView):
+
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = UserSerializer
+
+
+class CustomUserCreate(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        return HttpResponse('Error')
 
     def post(self, request, format='json'):
-            try:
-                serializer = CustomUserSerializer(data=request.data)
-                if serializer.is_valid():
-                    user = serializer.save()
-                if user:
-                    json = serializer.data
-                    return Response(json, status=status.HTTP_201_CREATED)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            except IntegrityError:
-                return Response("This credentials are already in use", status=status.HTTP_409_CONFLICT)
+        try:
+            serializer = UserSerializer(data=request.data)
+            if serializer.is_valid():
+                user = serializer.save()
+            if user:
+                json = serializer.data
+                return Response(json, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except IntegrityError:
+            return Response("This credentials are already in use", status=status.HTTP_409_CONFLICT)
+
 
 class ListViewSet(viewsets.ModelViewSet):
     """
@@ -41,6 +55,7 @@ class ListViewSet(viewsets.ModelViewSet):
         user = self.request.user
         return List.objects.filter(owner=user)
 
+
 class ItemViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Items to be viewed or edited.
@@ -52,6 +67,3 @@ class ItemViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return Item.objects.filter(list__owner=user)
-
-
-
