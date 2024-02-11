@@ -1,4 +1,4 @@
-# RedDjango
+# RedDjango -> Baseado num curso da Udemy para integrar DJANGO+REACT
 
 Welcome to the RedDjango GitHub repository! This project offers a practical exploration of integrating frontend and backend technologies, providing insights into the complexities of implementing a secure RESTful API with Django and JavaScript.
 ## Project Overview:
